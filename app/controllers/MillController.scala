@@ -35,7 +35,7 @@ class MillController @Inject() (
         if (message.isDefined) gameStatus = message.get
         else
           gameStatus =
-            s"${gameController.gameState.get.game.currentPlayer}'s turn(${gameController.currentGameState})."
+            s"${gameController.gameState.get.game.currentPlayer}'s turn(${gameController.currentGameState})"
     }
   }
 
