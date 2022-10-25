@@ -61,7 +61,6 @@ body {
     #game-status {
         position: absolute;
         z-index: 2;
-
         width: 30%;
 
         pre {
@@ -74,7 +73,13 @@ body {
         position: relative;
         width: calc(2/3 * 100%);
         height: 80vh;
-        box-shadow: 0 0 .25em rgba(0, 0, 0, .25);
+        box-shadow:
+            0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+            0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+            0 12.5px 10px rgba(0, 0, 0, 0.06),
+            0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+            0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+            0 100px 80px rgba(0, 0, 0, 0.12);
         background-image: linear-gradient(-60deg, #f93d66 50%, #6d47d9 50%);
 
         .ring {
@@ -82,8 +87,11 @@ body {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            border: 0.5rem solid;
-            padding: 1rem;
+            border-image-source: linear-gradient(to left, #8a0d28, #4c0bfc);
+            border-style: solid;
+            border-image-slice: 1;
+            border-width: 0.5rem;
+            padding: 0.5rem;
 
             &.w-0 {
                 top: 0;
@@ -111,7 +119,11 @@ body {
                 justify-content: space-between;
 
                 .field {
-                    font-size: 2rem;
+                    font-size: 3rem;
+                    box-shadow: 0 0.5rem 0.5rem rgba(0, 0, 0, 0.25);
+                    border-radius: 100%;
+                    width: 3rem;
+                    height: 3rem;
                     cursor: pointer;
                 }
             }
