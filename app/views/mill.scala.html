@@ -1,0 +1,19 @@
+@(gameStatus: String, board: de.htwg.se.mill.model.BoardInterface)
+@main("Mill - " + gameStatus) {
+<div id="mill">
+    <h1 class="message-box" id="game-status">
+        <pre>@gameStatus</pre>
+    </h1>
+    <div class="board">
+        @for(ring <- 0 until board.size) { <div class="ring w-@ring">
+            @for(row <- 0 until board.size) { <div class="row">
+                @for(col <- 0 until board.size) { @if(board.getField(col, row, ring).isDefined) { <span class="field"
+                    data-coords="@col@row@ring">@board.getField(col, row, ring).get</span>
+                    } }
+    </div>
+    }
+</div>
+}
+</div>
+</div>
+}
