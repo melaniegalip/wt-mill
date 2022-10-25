@@ -13,6 +13,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5"
 )
 
+includeFilter in (Assets, LessKeys.less) := "*.less"
+excludeFilter in (Assets, LessKeys.less) := "_*.less"
+
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "de.htwg.wt.mill.controllers._"
 
