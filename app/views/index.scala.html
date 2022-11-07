@@ -1,9 +1,21 @@
-@(text: String) @main("Mill") {
-<div id="home">
-  <div class="alert alert-light" role="alert">
-    <h1>
-      <pre>@text</pre>
-    </h1>
-  </div>
-</div>
-}
+    @(text: String) @main("Mill") {
+    <div id="home">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Welcome to Mill!</h5>
+          <p class="card-text">
+            <pre>@text</pre>
+          </p>
+          <form>
+            <div class="mb-3 row">
+              <label for="name" class="col-sm-2 col-form-label">Name</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="name">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Continue</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    }
