@@ -1,20 +1,20 @@
+import '/assets/lib/jquery/jquery.min.js';
+
 import { commandRoute } from './const.js';
 
 const addPlayerSelector = '#addPlayer';
 const playerNameSelector = '#playerName';
 
 function addPlayer() {
-  const playerName = document.querySelector(playerNameSelector).value;
+  const playerName = $(playerNameSelector).val();
   location.replace(`${commandRoute}/${playerName}`);
 }
 
 function onNewPlayer() {
-  document
-    .querySelector(addPlayerSelector)
-    .addEventListener('click', (e) => {
-      e.preventDefault();
-      addPlayer();
-    });
+  $(addPlayerSelector).click((e) => {
+    e.preventDefault();
+    addPlayer();
+  });
 }
 
 export { onNewPlayer };
