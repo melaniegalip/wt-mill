@@ -1,6 +1,7 @@
-@(gameStatus: String, errorMessage: Option[String], board:
-de.htwg.se.mill.model.BoardInterface) @boardSize = @{board.size + 1}
-@main("Mill - " + gameStatus) { @if(errorMessage.isDefined) {
+@(gameStatus: String, currentPlayer: String, errorMessage:
+Option[String], board: de.htwg.se.mill.model.BoardInterface)
+@boardSize = @{board.size + 1} @main("Mill - " + gameStatus) {
+@if(errorMessage.isDefined) {
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
   <symbol
     id="check-circle-fill"
@@ -51,8 +52,14 @@ de.htwg.se.mill.model.BoardInterface) @boardSize = @{board.size + 1}
 </div>
 }
 <div id="mill">
-  <div class="alert alert-light" role="alert" id="game-status">
-    <h2><pre>@gameStatus</pre></h2>
+  <div
+    class="alert alert-light"
+    role="alert"
+    id="game-status"
+    data-game-status="@gameStatus"
+    data-current-player="@currentPlayer"
+  >
+    <h2><pre>@{currentPlayer}'s turn: @gameStatus</pre></h2>
   </div>
   <div class="board">
     @for(ring <- 1 until boardSize) {
