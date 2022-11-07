@@ -1,3 +1,17 @@
+@import 'lib/bootstrap/scss/bootstrap';
+
+.alert {
+  position: fixed;
+  width: calc(100% - 2rem);
+}
+
+pre {
+  white-space: pre-line;
+  word-wrap: break-word;
+  margin-bottom: unset;
+  text-align: center;
+}
+
 html,
 body {
   width: 100%;
@@ -33,14 +47,6 @@ body {
     transform: translateX(25%);
   }
 }
-
-.message-box {
-  text-align: center;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 0.25em;
-  box-shadow: 0 0 0.25em rgba(0, 0, 0, 0.25);
-  padding: 1rem;
-}
 #home {
   display: flex;
   justify-content: center;
@@ -56,10 +62,6 @@ body {
     position: absolute;
     z-index: 2;
     width: 30%;
-    pre {
-      white-space: pre-line;
-      word-wrap: break-word;
-    }
   }
   .board {
     position: relative;
@@ -84,8 +86,8 @@ body {
       border-image-source: linear-gradient(to left, #8a0d28, #4c0bfc);
       border-style: solid;
       border-image-slice: 1;
-      border-width: 0.5rem;
-      padding: 0.5rem;
+      border-width: 0.6rem;
+      padding: 0.1rem 0.5rem;
       &.w-0 {
         top: 0;
         left: 0;
@@ -104,15 +106,11 @@ body {
         right: 20%;
         bottom: 20%;
       }
-      .row {
+      .field-row {
         display: flex;
         justify-content: space-between;
         .field {
-          font-size: 3rem;
-          box-shadow: 0 0.5rem 0.5rem rgba(0, 0, 0, 0.25);
-          border-radius: 100%;
-          width: 3rem;
-          height: 3rem;
+          font-size: 2.75rem;
           cursor: pointer;
         }
       }
