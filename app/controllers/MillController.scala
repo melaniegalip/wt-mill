@@ -3,6 +3,8 @@ package controllers
 import javax.inject._
 import play.api._
 import play.api.mvc._
+import play.api.libs.json._
+
 import com.google.inject.Injector
 import com.google.inject.Guice
 import de.htwg.se.mill.MillModule
@@ -26,58 +28,58 @@ class MillController @Inject() (
   val tui = new TUI(gameController)
   gameController.add(this)
 
-  var gameStatus: String = ""
+  var gameState: String = ""
   var currentPlayer: String = ""
-  var errorMessage: Option[String] = None
+  var errorMessage: String = ""
 
   override def update(message: Option[String], e: Event.Value) = {
     e match {
-      case Event.QUIT => gameStatus = "The game has been quitted."
+      case Event.QUIT => gameState = "The game has been quitted."
       case Event.PLAY =>
-        if (message.isDefined) errorMessage = message
+        if (message.isDefined) errorMessage = message.get
         else {
-          gameStatus = gameController.currentGameState
+          gameState = gameController.currentGameState
           currentPlayer =
             gameController.gameState.get.game.currentPlayer.toString
-          errorMessage = None
+          errorMessage = ""
         }
     }
   }
 
-  def index = Action { implicit request: Request[AnyContent] =>
-    if (!gameController.hasFirstPlayer)
-      Ok(views.html.index(Messages.introductionText))
-    else if (!gameController.hasSecondPlayer)
-      Ok(views.html.index(Messages.addSecondPlayerText))
-    else
-      Ok(
-        views.html.mill(
-          gameStatus,
-          currentPlayer,
-          errorMessage,
-          gameController.gameState.get.game.board
-        )
-      )
+  def index(playerName: String) = Action {
+    implicit request: Request[AnyContent] =>
+      onIndex(playerName)
   }
 
   def command(cmd: String) = Action { implicit request: Request[AnyContent] =>
-    onCommand(cmd)
+    tui.onInput(cmd)
+    Ok(
+      JsObject(
+        Seq(
+          "board" -> gameController.gameState.get.game.board.toJson,
+          "currentPlayer" -> JsString(currentPlayer),
+          "gameState" -> JsString(gameState),
+          "errorMessage" -> JsString(errorMessage)
+        )
+      )
+    )
   }
 
-  private def onCommand(cmd: String): Result = {
-    if (!gameController.hasFirstPlayer && !cmd.isBlank) {
-      gameController.addFirstPlayer(cmd)
+  private def onIndex(playerName: String): Result = {
+    if (!gameController.hasFirstPlayer && !playerName.isBlank) {
+      gameController.addFirstPlayer(playerName)
       return Ok(views.html.index(Messages.addSecondPlayerText))
-    } else if (!gameController.hasSecondPlayer && !cmd.isBlank) {
-      gameController.addSecondPlayer(cmd)
+    } else if (!gameController.hasSecondPlayer && !playerName.isBlank) {
+      gameController.addSecondPlayer(playerName)
       gameController.newGame
-    } else if (!cmd.isBlank) {
-      tui.onInput(cmd)
+    } else if (gameController.gameState.isEmpty) {
+      return Ok(views.html.index(Messages.introductionText))
     }
+
     Ok(
       views.html
         .mill(
-          gameStatus,
+          gameState,
           currentPlayer,
           errorMessage,
           gameController.gameState.get.game.board

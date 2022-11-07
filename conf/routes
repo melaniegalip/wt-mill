@@ -9,8 +9,9 @@
     # Mill Controller
 
     + nocsrf
-      GET / controllers.MillController.index()
-      GET /command/:cmd controllers.MillController.command(cmd)
+      GET / controllers.MillController.index(playerName = "")
+      GET /:playerName controllers.MillController.index(playerName: String)
+      GET /command/:cmd controllers.MillController.command(cmd: String)
 
     # Map static resources from the /public folder to the /assets URL path
 

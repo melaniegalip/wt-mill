@@ -1,16 +1,17 @@
 import '/assets/lib/jquery/jquery.min.js';
 
-import { commandRoute } from './const.js';
-
+const commandRoute = 'command';
 const gameSelector = '#mill';
 const fieldSelector = '.field';
-const gameStatusSelector = '#game-status';
+const gameStateSelector = '#game-state';
+const errorMessageSelector = '#error-message';
+const errorMessageAlertSelector = '#error-message-alert';
 const unsetFieldColor = '⚫';
 
 class Mill {
-  constructor(fields, gameStatus, currentPlayer) {
+  constructor(fields, gameState, currentPlayer) {
     this.fields = fields;
-    this.gameStatus = gameStatus;
+    this.gameState = gameState;
     this.currentPlayer = currentPlayer;
     this.from = null;
   }
@@ -28,8 +29,8 @@ class Mill {
     field.element.classList.add('active');
     if (field.isSet) {
       if (
-        this.gameStatus === 'Removing Pieces' ||
-        this.gameStatus === 'Setting Pieces'
+        this.gameState === 'Removing Pieces' ||
+        this.gameState === 'Setting Pieces'
       ) {
         this.onSetOrRemove(field);
       } else {
@@ -45,18 +46,72 @@ class Mill {
       } else {
         this.onSetOrRemove(field);
       }
-      this.from = null;
     }
   }
 
   onSetOrRemove(to) {
-    location.replace(`${commandRoute}/${to.representation}`);
+    $.getJSON(
+      `${commandRoute}/${to.representation}`,
+      ({ board, gameState, currentPlayer, errorMessage }) => {
+        const newField = board.fields.find(
+          (field) =>
+            field.x === to.col - 1 &&
+            field.y === to.row - 1 &&
+            field.ring === to.ring - 1
+        );
+        to.element.innerText = newField.color;
+        this.updateGameState(gameState, currentPlayer);
+        this.updateErrorMessage(errorMessage);
+      }
+    );
   }
 
   onMove(to) {
-    location.replace(
+    $.getJSON(
       `${commandRoute}/${this.from.representation} ${to.representation}`
+    ).done(
+      function ({ board, gameState, currentPlayer, errorMessage }) {
+        const oldField = board.fields.find(
+          (field) =>
+            field.x === this.from.col - 1 &&
+            field.y === this.from.row - 1 &&
+            field.ring === this.from.ring - 1
+        );
+        this.from.element.innerText = oldField.color;
+        const newField = board.fields.find(
+          (field) =>
+            field.x === to.col - 1 &&
+            field.y === to.row - 1 &&
+            field.ring === to.ring - 1
+        );
+        to.element.innerText = newField.color;
+        this.updateGameState(gameState, currentPlayer);
+        this.updateErrorMessage(errorMessage);
+      }.bind({
+        from: this.from,
+        updateGameState: this.updateGameState,
+        updateErrorMessage: this.updateErrorMessage,
+      })
     );
+    this.from = null;
+  }
+
+  updateGameState(gameState, currentPlayer) {
+    this.gameState = gameState;
+    this.currentPlayer = currentPlayer;
+    $(`${gameStateSelector} h2 pre`).text(
+      `${currentPlayer}'s turn: ${gameState}`
+    );
+  }
+
+  updateErrorMessage(errorMessage) {
+    if (errorMessage) {
+      $(errorMessageAlertSelector).addClass('show');
+      $(errorMessageSelector).text(errorMessage);
+      this.from = null;
+    } else {
+      $(errorMessageAlertSelector).removeClass('show');
+    }
   }
 }
 
@@ -88,20 +143,22 @@ function onPlay() {
     .map((f) => {
       const coords = f.dataset.coords.split('');
       return new Field(
-        coords[0],
-        coords[1],
-        coords[2],
+        Number(coords[0]),
+        Number(coords[1]),
+        Number(coords[2]),
         f.textContent,
         f
       );
     });
-  const gameStatusContent = $(gameStatusSelector).data();
-  const gameStatus = gameStatusContent.gameStatus;
-  const currentPlayer = gameStatusContent.currentPlayer;
-  const game = new Mill(fields, gameStatus, currentPlayer);
+  const gameStateContent = $(gameStateSelector).data();
+  const gameState = gameStateContent.gameState;
+  const currentPlayer = gameStateContent.currentPlayer;
+  const game = new Mill(fields, gameState, currentPlayer);
   game.play();
 }
 
-const gameLoaded = !!$(gameSelector);
+function gameLoaded() {
+  return !!$(gameSelector).get().length;
+}
 
 export { onPlay, gameLoaded };

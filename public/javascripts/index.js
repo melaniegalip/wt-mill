@@ -1,13 +1,20 @@
 import '/assets/lib/jquery/jquery.min.js';
 
-import { commandRoute } from './const.js';
+import { gameLoaded, onPlay } from './mill.js';
 
 const addPlayerSelector = '#addPlayer';
 const playerNameSelector = '#playerName';
 
 function addPlayer() {
   const playerName = $(playerNameSelector).val();
-  location.replace(`${commandRoute}/${playerName}`);
+  $.get(playerName, (data) => {
+    document.body.innerHTML = data;
+    if (gameLoaded()) {
+      onPlay();
+    } else {
+      onNewPlayer();
+    }
+  });
 }
 
 function onNewPlayer() {
