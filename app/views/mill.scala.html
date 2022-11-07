@@ -1,56 +1,50 @@
-@(gameStatus: String, currentPlayer: String, errorMessage:
-Option[String], board: de.htwg.se.mill.model.BoardInterface)
-@boardSize = @{board.size + 1} @main("Mill - " + gameStatus) {
-@if(errorMessage.isDefined) {
-<div
-  class="alert alert-danger alert-dismissible fade show d-flex align-items-center"
-  role="alert"
->
-  <svg
-    class="bi flex-shrink-0 me-2"
-    width="24"
-    height="24"
-    role="img"
-    aria-label="Danger:"
-  >
-    <use xlink:href="#exclamation-triangle-fill" />
-  </svg>
-  <div>
-    <strong>Warning!</strong> @errorMessage.get
-    <button
-      type="button"
-      class="btn-close"
-      data-bs-dismiss="alert"
-      aria-label="Close"
-    ></button>
-  </div>
-</div>
-}
-<div id="mill">
-  <div
-    class="alert alert-light"
-    role="alert"
-    id="game-status"
-    data-game-status="@gameStatus"
-    data-current-player="@currentPlayer"
-  >
-    <h2><pre>@{currentPlayer}'s turn: @gameStatus</pre></h2>
-  </div>
-  <div class="board">
-    @for(ring <- 1 until boardSize) {
-    <div class="ring w-@ring">
-      @for(row <- 1 until boardSize) {
-      <div class="field-row">
-        @for(col <- 1 until boardSize) { @if(board.getField(col - 1,
-        row - 1, ring - 1).isDefined) {
-        <span class="field" data-coords="@col@row@ring"
-          >@board.getField(col - 1, row - 1, ring - 1).get</span
-        >
-        } }
+    @(gameState: String, currentPlayer: String, errorMessage: String, board: de.htwg.se.mill.model.BoardInterface)
+    @boardSize = @{board.size + 1}
+    @main("Mill - " + gameState) {
+
+    @defining("alert alert-danger fade d-flex align-items-center") { alertClass =>
+    <div id="error-message-alert" class="@(if (errorMessage.isEmpty) alertClass else alertClass + " show")"
+      role="alert"
+    >
+      <svg
+        class="bi flex-shrink-0 me-2"
+        width="24"
+        height="24"
+        role="img"
+        aria-label="Danger:"
+      >
+        <use xlink:href="#exclamation-triangle-fill" />
+      </svg>
+      <div>
+        <strong>Warning!</strong> <span id="error-message">@errorMessage</span>
       </div>
-      }
     </div>
     }
-  </div>
-</div>
-}
+    <div id="mill">
+      <div
+        class="alert alert-light"
+        role="alert"
+        id="game-state"
+        data-game-state="@gameState"
+        data-current-player="@currentPlayer"
+      >
+        <h2><pre>@{currentPlayer}'s turn: @gameState</pre></h2>
+      </div>
+      <div class="board">
+        @for(ring <- 1 until boardSize) {
+        <div class="ring w-@ring">
+          @for(row <- 1 until boardSize) {
+          <div class="field-row">
+            @for(col <- 1 until boardSize) { @if(board.getField(col - 1,
+            row - 1, ring - 1).isDefined) {
+            <span class="field" data-coords="@col@row@ring"
+              >@board.getField(col - 1, row - 1, ring - 1).get</span
+            >
+            } }
+          </div>
+          }
+        </div>
+        }
+      </div>
+    </div>
+    }

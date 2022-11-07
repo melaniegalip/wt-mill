@@ -5,7 +5,7 @@ import { gameLoaded, onPlay } from './mill.js';
 import { onNewPlayer } from './index.js';
 
 $(() => {
-  if (gameLoaded) {
+  if (gameLoaded()) {
     onPlay();
   } else {
     onNewPlayer();
