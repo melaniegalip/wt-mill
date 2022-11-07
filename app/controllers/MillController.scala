@@ -27,12 +27,13 @@ class MillController @Inject() (
   gameController.add(this)
 
   var gameStatus: String = ""
+  var errorMessage: Option[String] = None
 
   override def update(message: Option[String], e: Event.Value) = {
     e match {
       case Event.QUIT => gameStatus = "The game has been quitted."
       case Event.PLAY =>
-        if (message.isDefined) gameStatus = message.get
+        if (message.isDefined) errorMessage = message
         else
           gameStatus =
             s"${gameController.gameState.get.game.currentPlayer}'s turn(${gameController.currentGameState})"
@@ -45,7 +46,13 @@ class MillController @Inject() (
     else if (!gameController.hasSecondPlayer)
       Ok(views.html.index(Messages.addSecondPlayerText))
     else
-      Ok(views.html.mill(gameStatus, gameController.gameState.get.game.board))
+      Ok(
+        views.html.mill(
+          gameStatus,
+          errorMessage,
+          gameController.gameState.get.game.board
+        )
+      )
   }
 
   def command(cmd: String) = Action { implicit request: Request[AnyContent] =>
@@ -62,6 +69,9 @@ class MillController @Inject() (
     } else if (!cmd.isBlank) {
       tui.onInput(cmd)
     }
-    Ok(views.html.mill(gameStatus, gameController.gameState.get.game.board))
+    Ok(
+      views.html
+        .mill(gameStatus, errorMessage, gameController.gameState.get.game.board)
+    )
   }
 }
