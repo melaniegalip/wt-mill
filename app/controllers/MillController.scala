@@ -27,6 +27,7 @@ class MillController @Inject() (
   gameController.add(this)
 
   var gameStatus: String = ""
+  var currentPlayer: String = ""
   var errorMessage: Option[String] = None
 
   override def update(message: Option[String], e: Event.Value) = {
@@ -35,8 +36,9 @@ class MillController @Inject() (
       case Event.PLAY =>
         if (message.isDefined) errorMessage = message
         else {
-          gameStatus =
-            s"${gameController.gameState.get.game.currentPlayer}'s turn(${gameController.currentGameState})"
+          gameStatus = gameController.currentGameState
+          currentPlayer =
+            gameController.gameState.get.game.currentPlayer.toString
           errorMessage = None
         }
     }
@@ -51,6 +53,7 @@ class MillController @Inject() (
       Ok(
         views.html.mill(
           gameStatus,
+          currentPlayer,
           errorMessage,
           gameController.gameState.get.game.board
         )
@@ -73,7 +76,12 @@ class MillController @Inject() (
     }
     Ok(
       views.html
-        .mill(gameStatus, errorMessage, gameController.gameState.get.game.board)
+        .mill(
+          gameStatus,
+          currentPlayer,
+          errorMessage,
+          gameController.gameState.get.game.board
+        )
     )
   }
 }

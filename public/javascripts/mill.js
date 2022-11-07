@@ -2,11 +2,14 @@ import { commandRoute } from './const.js';
 
 const gameSelector = '#mill';
 const fieldSelector = '.field';
+const gameStatusSelector = '#game-status';
 const unsetFieldColor = '⚫';
 
 class Mill {
-  constructor(fields) {
+  constructor(fields, gameStatus, currentPlayer) {
     this.fields = fields;
+    this.gameStatus = gameStatus;
+    this.currentPlayer = currentPlayer;
     this.from = null;
   }
 
@@ -17,26 +20,34 @@ class Mill {
   }
 
   onTurn(field) {
-    console.log(field, this.from, field.isSet);
+    this.fields.forEach((field) => {
+      field.element.classList.remove('active');
+    });
+    field.element.classList.add('active');
     if (field.isSet) {
-      if (!this.from) {
-        this.from = field;
-        // TODO: remove fields
+      if (
+        this.gameStatus === 'Removing Pieces' ||
+        this.gameStatus === 'Setting Pieces'
+      ) {
+        this.onSetOrRemove(field);
       } else {
-        console.error('can not move to set field');
+        if (!this.from) {
+          this.from = field;
+        } else {
+          this.onMove(field);
+        }
       }
     } else {
       if (this.from) {
         this.onMove(field);
       } else {
-        this.onSet(field);
+        this.onSetOrRemove(field);
       }
       this.from = null;
     }
   }
 
-  onSet(to) {
-    console.log(`${commandRoute}/${to.representation}`);
+  onSetOrRemove(to) {
     location.replace(`${commandRoute}/${to.representation}`);
   }
 
@@ -81,7 +92,12 @@ function onPlay() {
       f
     );
   });
-  const game = new Mill(fields);
+  const gameStatusElement = document.querySelector(
+    gameStatusSelector
+  );
+  const gameStatus = gameStatusElement.dataset.gameStatus;
+  const currentPlayer = gameStatusElement.dataset.currentPlayer;
+  const game = new Mill(fields, gameStatus, currentPlayer);
   game.play();
 }
 
