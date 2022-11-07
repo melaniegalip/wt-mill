@@ -1,3 +1,5 @@
+import '/assets/lib/jquery/jquery.min.js';
+
 import { commandRoute } from './const.js';
 
 const gameSelector = '#mill';
@@ -81,26 +83,25 @@ class Field {
 }
 
 function onPlay() {
-  const fieldElements = document.querySelectorAll(fieldSelector);
-  const fields = Array.from(fieldElements).map((f) => {
-    const coords = f.dataset.coords.split('');
-    return new Field(
-      coords[0],
-      coords[1],
-      coords[2],
-      f.textContent,
-      f
-    );
-  });
-  const gameStatusElement = document.querySelector(
-    gameStatusSelector
-  );
-  const gameStatus = gameStatusElement.dataset.gameStatus;
-  const currentPlayer = gameStatusElement.dataset.currentPlayer;
+  const fields = $(fieldSelector)
+    .toArray()
+    .map((f) => {
+      const coords = f.dataset.coords.split('');
+      return new Field(
+        coords[0],
+        coords[1],
+        coords[2],
+        f.textContent,
+        f
+      );
+    });
+  const gameStatusContent = $(gameStatusSelector).data();
+  const gameStatus = gameStatusContent.gameStatus;
+  const currentPlayer = gameStatusContent.currentPlayer;
   const game = new Mill(fields, gameStatus, currentPlayer);
   game.play();
 }
 
-const gameLoaded = !!document.querySelector(gameSelector);
+const gameLoaded = !!$(gameSelector);
 
 export { onPlay, gameLoaded };
