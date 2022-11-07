@@ -34,9 +34,11 @@ class MillController @Inject() (
       case Event.QUIT => gameStatus = "The game has been quitted."
       case Event.PLAY =>
         if (message.isDefined) errorMessage = message
-        else
+        else {
           gameStatus =
             s"${gameController.gameState.get.game.currentPlayer}'s turn(${gameController.currentGameState})"
+          errorMessage = None
+        }
     }
   }
 
