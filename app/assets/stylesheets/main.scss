@@ -162,6 +162,9 @@ body {
             font-size: 2.8rem;
           }
           cursor: pointer;
+          &.active {
+            border: 1px solid red;
+          }
         }
       }
     }
