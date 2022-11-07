@@ -1,6 +1,6 @@
 @(gameStatus: String, errorMessage: Option[String], board:
-de.htwg.se.mill.model.BoardInterface) @main("Mill - " + gameStatus) {
-@if(errorMessage.isDefined) {
+de.htwg.se.mill.model.BoardInterface) @boardSize = @{board.size + 1}
+@main("Mill - " + gameStatus) { @if(errorMessage.isDefined) {
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
   <symbol
     id="check-circle-fill"
@@ -50,20 +50,19 @@ de.htwg.se.mill.model.BoardInterface) @main("Mill - " + gameStatus) {
   </div>
 </div>
 }
-
 <div id="mill">
   <div class="alert alert-light" role="alert" id="game-status">
     <h2><pre>@gameStatus</pre></h2>
   </div>
   <div class="board">
-    @for(ring <- 0 until board.size) {
+    @for(ring <- 1 until boardSize) {
     <div class="ring w-@ring">
-      @for(row <- 0 until board.size) {
+      @for(row <- 1 until boardSize) {
       <div class="field-row">
-        @for(col <- 0 until board.size) { @if(board.getField(col, row,
-        ring).isDefined) {
+        @for(col <- 1 until boardSize) { @if(board.getField(col - 1,
+        row - 1, ring - 1).isDefined) {
         <span class="field" data-coords="@col@row@ring"
-          >@board.getField(col, row, ring).get</span
+          >@board.getField(col - 1, row - 1, ring - 1).get</span
         >
         } }
       </div>
