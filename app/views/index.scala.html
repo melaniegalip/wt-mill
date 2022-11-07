@@ -6,14 +6,17 @@
           <p class="card-text">
             <pre>@text</pre>
           </p>
-          <form>
+          <form class="needs-validation" novalidate>
             <div class="mb-3 row">
               <label for="playerName" class="col-sm-2 col-form-label">Player Name</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="playerName" min="3" autofocus>
+                <input type="text" class="form-control" id="playerName" placeholder="Reyhan" required autofocus>
+                <div class="valid-feedback">
+                Looks good!
               </div>
+              </div>
+
             </div>
-            <button type="submit" class="btn btn-primary" id="addPlayer">Continue</button>
           </form>
         </div>
       </div>
