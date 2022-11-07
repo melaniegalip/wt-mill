@@ -1,4 +1,4 @@
-name := "Mill"
+name := "WT-Mill"
 organization := "de.htwg.wt.mill"
 
 version := "1.0-SNAPSHOT"

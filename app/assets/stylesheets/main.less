@@ -1,132 +1,120 @@
-html,
-body {
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-}
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
 
-.bg {
-    background-image: linear-gradient(-60deg, #f93d66 50%, #6d47d9 50%);
-    animation: slide 3s ease-in-out infinite alternate;
-    bottom: 0;
-    left: -50%;
-    opacity: .5;
-    position: fixed;
-    right: -50%;
-    top: 0;
-    z-index: -1;
-}
+    .bg {
+      background-image: linear-gradient(-60deg, #f93d66 50%, #6d47d9 50%);
+      animation: slide 3s ease-in-out infinite alternate;
+      bottom: 0;
+      left: -50%;
+      opacity: .5;
+      position: fixed;
+      right: -50%;
+      top: 0;
+      z-index: -1;
+    }
 
-.bg2 {
-    animation-direction: alternate-reverse;
-    animation-duration: 4s;
-}
+    .bg2 {
+      animation-direction: alternate-reverse;
+      animation-duration: 4s;
+    }
 
-.bg3 {
-    animation-duration: 5s;
-}
+    .bg3 {
+      animation-duration: 5s;
+    }
 
-@keyframes slide {
-    0% {
+    @keyframes slide {
+      0% {
         transform: translateX(-25%);
-    }
+      }
 
-    100% {
+      100% {
         transform: translateX(25%);
+      }
     }
-}
 
-.message-box {
-    text-align: center;
-    background-color: rgba(255, 255, 255, .8);
-    border-radius: .25em;
-    box-shadow: 0 0 .25em rgba(0, 0, 0, .25);
-    padding: 1rem;
-}
+    .message-box {
+      text-align: center;
+      background-color: rgba(255, 255, 255, .8);
+      border-radius: .25em;
+      box-shadow: 0 0 .25em rgba(0, 0, 0, .25);
+      padding: 1rem;
+    }
 
-#home {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-}
+    #home {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
 
-#mill {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
+    #mill {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
 
-    #game-status {
+      #game-status {
         position: absolute;
         z-index: 2;
+
         width: 30%;
 
         pre {
-            white-space: pre-line;
-            word-wrap: break-word;
+          white-space: pre-line;
+          word-wrap: break-word;
         }
-    }
+      }
 
-    .board {
+      .board {
         position: relative;
         width: calc(2/3 * 100%);
         height: 80vh;
-        box-shadow:
-            0 2.8px 2.2px rgba(0, 0, 0, 0.034),
-            0 6.7px 5.3px rgba(0, 0, 0, 0.048),
-            0 12.5px 10px rgba(0, 0, 0, 0.06),
-            0 22.3px 17.9px rgba(0, 0, 0, 0.072),
-            0 41.8px 33.4px rgba(0, 0, 0, 0.086),
-            0 100px 80px rgba(0, 0, 0, 0.12);
+        box-shadow: 0 0 .25em rgba(0, 0, 0, .25);
         background-image: linear-gradient(-60deg, #f93d66 50%, #6d47d9 50%);
 
         .ring {
-            position: absolute;
+          position: absolute;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          border: 0.5rem solid;
+          padding: 1rem;
+
+          &.w-0 {
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+          }
+
+          &.w-1 {
+            top: 10%;
+            left: 10%;
+            right: 10%;
+            bottom: 10%;
+          }
+
+          &.w-2 {
+            top: 20%;
+            left: 20%;
+            right: 20%;
+            bottom: 20%;
+          }
+
+          .row {
             display: flex;
-            flex-direction: column;
             justify-content: space-between;
-            border-image-source: linear-gradient(to left, #8a0d28, #4c0bfc);
-            border-style: solid;
-            border-image-slice: 1;
-            border-width: 0.5rem;
-            padding: 0.5rem;
 
-            &.w-0 {
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
+            .field {
+              font-size: 2rem;
+              cursor: pointer;
             }
-
-            &.w-1 {
-                top: 10%;
-                left: 10%;
-                right: 10%;
-                bottom: 10%;
-            }
-
-            &.w-2 {
-                top: 20%;
-                left: 20%;
-                right: 20%;
-                bottom: 20%;
-            }
-
-            .row {
-                display: flex;
-                justify-content: space-between;
-
-                .field {
-                    font-size: 3rem;
-                    box-shadow: 0 0.5rem 0.5rem rgba(0, 0, 0, 0.25);
-                    border-radius: 100%;
-                    width: 3rem;
-                    height: 3rem;
-                    cursor: pointer;
-                }
-            }
+          }
         }
+      }
     }
-}
