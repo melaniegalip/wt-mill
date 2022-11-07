@@ -17,13 +17,15 @@ class Mill {
   }
 
   onTurn(field) {
-    console.log(field, this.from, field.isSet);
+    // TODO: take current player and game status into account
+    // TODO: show selected fields
     if (field.isSet) {
       if (!this.from) {
         this.from = field;
         // TODO: remove fields
       } else {
         console.error('can not move to set field');
+        // TODO: show error message
       }
     } else {
       if (this.from) {
@@ -36,7 +38,6 @@ class Mill {
   }
 
   onSet(to) {
-    console.log(`${commandRoute}/${to.representation}`);
     location.replace(`${commandRoute}/${to.representation}`);
   }
 
