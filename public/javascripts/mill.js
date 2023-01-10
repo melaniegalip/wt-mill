@@ -17,7 +17,6 @@ class Mill {
     this.from = null;
     this.to = null;
     this.channel = channel;
-    this.isLoading = false;
   }
 
   play() {
@@ -70,7 +69,8 @@ class Mill {
       );
       field.setColor(newField.color);
     });
-    this.isLoading = false;
+    $('#mill .loading-indicator').removeClass('show');
+    $('#mill .board').removeClass('non-interactable');
     this.from = null;
     this.to = null;
     this.updateGameState(gameState, currentPlayer);
@@ -83,8 +83,8 @@ class Mill {
         command: this.to.representation,
       })
     );
-    // TODO: LOADING INDICATOR
-    this.isLoading = true;
+    $('#mill .loading-indicator').addClass('show');
+    $('#mill .board').addClass('non-interactable');
   }
 
   onMove() {
@@ -93,7 +93,8 @@ class Mill {
         command: `${this.from.representation} ${this.to.representation}`,
       })
     );
-    this.isLoading = true;
+    $('#mill .loading-indicator').addClass('show');
+    $('#mill .board').addClass('non-interactable');
   }
 
   updateGameState(gameState, currentPlayer) {

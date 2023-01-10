@@ -62,7 +62,7 @@ class MillController @Inject() (
     gameController = injector.getInstance(classOf[ControllerInterface])
     tui = new TUI(gameController)
     errorMessage = new String
-    channels.empty
+    channels.clear()
   }
 
   private object SudokuWebSocketActorFactory {
@@ -73,7 +73,7 @@ class MillController @Inject() (
 
   private object GameEvent extends Enumeration {
     type GameEvent = Value
-    val WAITING_FOR_SECOND_PLAYER, GAME_STARTED, GAME_INTRODUCTION,
+    val WAITING_FOR_SECOND_PLAYER, GAME_STARTED, GAME_INTRODUCTION, GAME_QUIT,
         GAME_PLAYING = Value
   }
 
@@ -90,12 +90,16 @@ class MillController @Inject() (
       }
     }
 
-    private def gameIntroduction = JsObject(
-      Seq(
-        "event" -> JsString(GameEvent.GAME_INTRODUCTION.toString),
-        "page" -> JsString(views.html.index(Messages.introductionText).body)
-      )
-    )
+    override def aroundPostStop(): Unit = {
+      println("quitting game")
+      channels.values.foreach(ch => {
+        ch ! gameQuit
+      })
+      restart
+    }
+
+    private def gameIntroductionPage =
+      views.html.index(Messages.introductionText).body
 
     private def newGame = JsObject(
       Seq(
@@ -110,6 +114,18 @@ class MillController @Inject() (
             )
             .body
         )
+      )
+    )
+    private def gameIntroduction = JsObject(
+      Seq(
+        "event" -> JsString(GameEvent.GAME_INTRODUCTION.toString),
+        "page" -> JsString(gameIntroductionPage)
+      )
+    )
+
+    private def gameQuit = JsObject(
+      Seq(
+        "event" -> JsString(GameEvent.GAME_QUIT.toString)
       )
     )
 
@@ -147,10 +163,7 @@ class MillController @Inject() (
 
     override def update(message: Option[String], e: Event.Value) =
       e match {
-        case Event.QUIT => {
-          restart
-          channel ! gameIntroduction
-        }
+        case Event.QUIT => aroundPostStop()
         case Event.PLAY => {
           errorMessage = if (message.isDefined) message.get else new String
           channel ! JsObject(
