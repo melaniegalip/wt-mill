@@ -8,9 +8,7 @@
 
     # Mill Controller
 
-    GET / controllers.MillController.index(playerName = "")
-    GET /player/:playerName  controllers.MillController.index(playerName: String)
-    GET /command/:cmd controllers.MillController.command(cmd: String)
+    GET / controllers.MillController.index
     GET /channel  controllers.MillController.channel
 
     # Map static resources from the /public folder to the /assets URL path
