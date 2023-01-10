@@ -8,6 +8,12 @@ const channelRoute = document.body.dataset.wsUrl;
 let channel = new WebSocket(channelRoute);
 let game;
 
+function restartChannel() {
+  channel.close();
+  channel = new WebSocket(channelRoute);
+  onChannel();
+}
+
 function onChannel() {
   channel.setTimeout;
   channel.onopen = (event) => {
@@ -20,6 +26,12 @@ function onChannel() {
 
   channel.onerror = (error) => {
     console.error('An error occured in the channel: ', error);
+    channel.send(
+      JSON.stringify({
+        command: 'q',
+      })
+    );
+    restartChannel();
   };
 
   channel.onmessage = (e) => {
@@ -49,9 +61,7 @@ function onChannel() {
           );
           break;
         case 'GAME_QUIT':
-          channel.close();
-          channel = new WebSocket(channelRoute);
-          onChannel();
+          restartChannel();
           break;
         default:
           console.error('Unknown event!');
