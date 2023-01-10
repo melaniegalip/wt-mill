@@ -1,30 +1,25 @@
 import '/assets/lib/jquery/jquery.min.js';
 
-import { gameLoaded, onPlay } from './mill.js';
-
+const playerRoute = 'player';
 const addPlayerSelector = '#addPlayer';
 const playerNameSelector = '#playerName';
 
-function addPlayer() {
-  const playerName = $(playerNameSelector).val();
-  $.get(playerName, (data) => {
-    /*
-        document.body.innerHTML = data;
-        if (gameLoaded()) {
-          onPlay();
-        } else {
-          onNewPlayer();
-        }
-        */
-    console.log('player created', data);
-  });
-}
+let player;
 
-function onNewPlayer() {
+function onNewPlayer(channel) {
   $(addPlayerSelector).click((e) => {
     e.preventDefault();
-    addPlayer();
+    addPlayer(channel);
   });
 }
 
-export { onNewPlayer };
+function addPlayer(channel) {
+  player = $(playerNameSelector).val();
+  channel.send(
+    JSON.stringify({
+      playerName: player,
+    })
+  );
+}
+
+export { onNewPlayer, player };

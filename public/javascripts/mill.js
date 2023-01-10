@@ -9,16 +9,24 @@ const errorMessageAlertSelector = '#error-message-alert';
 const unsetFieldColor = '⚫';
 
 class Mill {
-  constructor(fields, gameState, currentPlayer) {
+  constructor(channel, player, fields, gameState, currentPlayer) {
     this.fields = fields;
     this.gameState = gameState;
     this.currentPlayer = currentPlayer;
+    this.player = player;
     this.from = null;
+    this.to = null;
+    this.channel = channel;
+    this.isLoading = false;
   }
 
   play() {
     this.fields.forEach((field) =>
-      field.on('click', (e) => this.onTurn(field))
+      field.on('click', (e) => {
+        if (this.player === this.currentPlayer.split(' ')[0]) {
+          this.onTurn(field);
+        }
+      })
     );
   }
 
@@ -32,68 +40,60 @@ class Mill {
         this.gameState === 'Removing Pieces' ||
         this.gameState === 'Setting Pieces'
       ) {
-        this.onSetOrRemove(field);
+        this.to = field.copy();
+        this.onSetOrRemove();
       } else {
         if (!this.from) {
-          this.from = field;
+          this.from = field.copy();
         } else {
-          this.onMove(field);
+          this.to = field.copy();
+          this.onMove();
         }
       }
     } else {
+      this.to = field.copy();
       if (this.from) {
-        this.onMove(field);
+        this.onMove();
       } else {
-        this.onSetOrRemove(field);
+        this.onSetOrRemove();
       }
     }
   }
 
-  onSetOrRemove(to) {
-    $.getJSON(
-      `${commandRoute}/${to.representation}`,
-      ({ board, gameState, currentPlayer, errorMessage }) => {
-        const newField = board.fields.find(
-          (field) =>
-            field.x === to.col - 1 &&
-            field.y === to.row - 1 &&
-            field.ring === to.ring - 1
-        );
-        to.element.innerText = newField.color;
-        this.updateGameState(gameState, currentPlayer);
-        this.updateErrorMessage(errorMessage);
-      }
-    );
+  updateBoard(board, gameState, currentPlayer, errorMessage) {
+    this.fields.forEach((field) => {
+      const newField = board.fields.find(
+        (f) =>
+          f.x + 1 === field.col &&
+          f.y + 1 === field.row &&
+          f.ring + 1 === field.ring
+      );
+      field.setColor(newField.color);
+    });
+    this.isLoading = false;
+    this.from = null;
+    this.to = null;
+    this.updateGameState(gameState, currentPlayer);
+    this.updateErrorMessage(errorMessage);
   }
 
-  onMove(to) {
-    $.getJSON(
-      `${commandRoute}/${this.from.representation} ${to.representation}`
-    ).done(
-      function ({ board, gameState, currentPlayer, errorMessage }) {
-        const oldField = board.fields.find(
-          (field) =>
-            field.x === this.from.col - 1 &&
-            field.y === this.from.row - 1 &&
-            field.ring === this.from.ring - 1
-        );
-        this.from.element.innerText = oldField.color;
-        const newField = board.fields.find(
-          (field) =>
-            field.x === to.col - 1 &&
-            field.y === to.row - 1 &&
-            field.ring === to.ring - 1
-        );
-        to.element.innerText = newField.color;
-        this.updateGameState(gameState, currentPlayer);
-        this.updateErrorMessage(errorMessage);
-      }.bind({
-        from: this.from,
-        updateGameState: this.updateGameState,
-        updateErrorMessage: this.updateErrorMessage,
+  onSetOrRemove() {
+    this.channel.send(
+      JSON.stringify({
+        command: this.to.representation,
       })
     );
-    this.from = null;
+    // TODO: LOADING INDICATOR
+    this.isLoading = true;
+  }
+
+  onMove() {
+    this.channel.send(
+      JSON.stringify({
+        command: `${this.from.representation} ${this.to.representation}`,
+      })
+    );
+    this.isLoading = true;
   }
 
   updateGameState(gameState, currentPlayer) {
@@ -132,12 +132,27 @@ class Field {
     return `${this.col}${this.row}${this.ring}`;
   }
 
+  setColor(color) {
+    this.color = color;
+    this.element.innerText = color;
+  }
+
   on(event, handler) {
     this.element.addEventListener(event, handler);
   }
+
+  copy() {
+    return new Field(
+      this.col,
+      this.row,
+      this.ring,
+      this.color,
+      this.element
+    );
+  }
 }
 
-function onPlay() {
+function newGame(channel, player) {
   const fields = $(fieldSelector)
     .toArray()
     .map((f) => {
@@ -153,12 +168,7 @@ function onPlay() {
   const gameStateContent = $(gameStateSelector).data();
   const gameState = gameStateContent.gameState;
   const currentPlayer = gameStateContent.currentPlayer;
-  const game = new Mill(fields, gameState, currentPlayer);
-  game.play();
+  return new Mill(channel, player, fields, gameState, currentPlayer);
 }
 
-function gameLoaded() {
-  return !!$(gameSelector).get().length;
-}
-
-export { onPlay, gameLoaded };
+export { newGame };

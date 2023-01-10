@@ -1,7 +1,5 @@
     @(gameState: String, currentPlayer: String, errorMessage: String, board: de.htwg.se.mill.model.BoardInterface)
     @boardSize = @{board.size + 1}
-    @main("Mill - " + gameState) {
-
     @defining("alert alert-danger fade d-flex align-items-center") { alertClass =>
     <div id="error-message-alert" class="@(if (errorMessage.isEmpty) alertClass else alertClass + " show")"
       role="alert"
@@ -48,4 +46,3 @@
         }
       </div>
     </div>
-    }
