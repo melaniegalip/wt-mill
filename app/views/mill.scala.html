@@ -18,7 +18,6 @@
       </div>
     </div>
     }
-
     <div id="mill">
       <div
         class="alert alert-light"
@@ -34,15 +33,21 @@
         <div class="ring w-@ring">
           @for(row <- 1 until boardSize) {
           <div class="field-row">
-            @for(col <- 1 until boardSize) { @if(board.getField(col - 1,
-            row - 1, ring - 1).isDefined) {
-            <span class="field" data-coords="@col@row@ring"
-              >@board.getField(col - 1, row - 1, ring - 1).get</span
-            >
-            } }
+            @for(col <- 1 until boardSize) {
+              @if(board.getField(col - 1, row - 1, ring - 1).isDefined) {
+                <span class="field" data-coords="@col@row@ring">
+                  @board.getField(col - 1, row - 1, ring - 1).get
+                </span>
+              }
+            }
           </div>
           }
         </div>
         }
+        <div class="loading-indicator">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ import { newGame } from './mill.js';
 import { onNewPlayer, player } from './index.js';
 
 const channelRoute = document.body.dataset.wsUrl;
-const channel = new WebSocket(channelRoute);
+let channel = new WebSocket(channelRoute);
 let game;
 
 function onChannel() {
@@ -27,8 +27,8 @@ function onChannel() {
       const data = JSON.parse(e.data);
       switch (data.event) {
         case 'WAITING_FOR_SECOND_PLAYER':
-          console.log('waiting for second player');
-          // TODO: LOADING INDICATOR
+          $('#home .loading-indicator').addClass('show');
+          $('#home .card-text').addClass('non-interactable');
           break;
         case 'GAME_INTRODUCTION':
           $('#content').html(data.page);
@@ -47,6 +47,11 @@ function onChannel() {
             data.currentPlayer,
             data.errorMessage
           );
+          break;
+        case 'GAME_QUIT':
+          channel.close();
+          channel = new WebSocket(channelRoute);
+          onChannel();
           break;
         default:
           console.error('Unknown event!');
