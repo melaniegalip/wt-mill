@@ -1,0 +1,16 @@
+#home {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+
+  .card {
+    width: 90%;
+    @include media-breakpoint-up(lg) {
+      width: 50%;
+    }
+    .card-text {
+      position: relative;
+    }
+  }
+}
