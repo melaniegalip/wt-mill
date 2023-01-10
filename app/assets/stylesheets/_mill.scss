@@ -1,0 +1,105 @@
+#mill {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  #game-state {
+    position: absolute;
+    z-index: 2;
+    &.alert {
+      margin-bottom: 0;
+      padding: 1rem 0.5rem;
+    }
+    h2 {
+      margin-bottom: 0;
+      font-size: 0.95rem;
+      @include media-breakpoint-up(md) {
+        font-size: 1.75rem;
+      }
+      @include media-breakpoint-up(lg) {
+        font-size: 1.75rem;
+      }
+    }
+    width: 35%;
+    @include media-breakpoint-up(md) {
+      width: 40%;
+    }
+    @include media-breakpoint-up(lg) {
+      width: 22%;
+    }
+  }
+  .board {
+    position: relative;
+    width: 100%;
+    @include media-breakpoint-up(md) {
+      height: 60vh;
+    }
+    @include media-breakpoint-up(lg) {
+      width: calc(3 / 6 * 100%);
+      height: 80vh;
+    }
+    height: 50vh;
+    box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+      0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+      0 12.5px 10px rgba(0, 0, 0, 0.06),
+      0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+      0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+      0 100px 80px rgba(0, 0, 0, 0.12);
+    background-image: linear-gradient(
+      -60deg,
+      #f93d66 50%,
+      #6d47d9 50%
+    );
+    .ring {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-image-source: linear-gradient(to left, #8a0d28, #4c0bfc);
+      border-style: solid;
+      border-image-slice: 1;
+      border-width: 0.3rem;
+      font-size: 1.75rem;
+      @include media-breakpoint-up(md) {
+        border-width: 0.6rem;
+        padding: 0.1rem 0.5rem;
+      }
+      padding: 0.1rem 0.25rem;
+      &.w-1 {
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+      &.w-2 {
+        top: 10%;
+        left: 10%;
+        right: 10%;
+        bottom: 10%;
+      }
+      &.w-3 {
+        top: 20%;
+        left: 20%;
+        right: 20%;
+        bottom: 20%;
+      }
+      .field-row {
+        display: flex;
+        justify-content: space-between;
+        .field {
+          font-size: 1.5rem;
+          @include media-breakpoint-up(md) {
+            font-size: 2.5rem;
+          }
+          @include media-breakpoint-up(lg) {
+            font-size: 2.8rem;
+          }
+          cursor: pointer;
+          &.active {
+            border: 0.2rem solid greenyellow;
+          }
+        }
+      }
+    }
+  }
+}
