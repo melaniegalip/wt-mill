@@ -16,6 +16,7 @@ import de.htwg.se.mill.util.Messages
 import de.htwg.se.mill.util.Observer
 import de.htwg.se.mill.aview.TUI
 import de.htwg.se.mill.util.Event
+import scala.concurrent.Future
 
 /** This controller creates an `Action` to handle HTTP requests to the
   * application's home page.
@@ -24,105 +25,146 @@ import de.htwg.se.mill.util.Event
 class MillController @Inject() (
     val controllerComponents: ControllerComponents
 )(implicit system: ActorSystem, mat: Materializer)
-    extends BaseController
-    with Observer {
-
+    extends BaseController {
   private val injector: Injector = Guice.createInjector(new MillModule)
-  private val gameController =
+  private var gameController =
     injector.getInstance(classOf[ControllerInterface])
-  private val tui = new TUI(gameController)
-  private var gameState: String = ""
-  private var currentPlayer: String = ""
-  private var errorMessage: String = ""
-  gameController.add(this)
+  private var tui = new TUI(gameController)
+  private var errorMessage = new String
+  private val channels =
+    scala.collection.mutable.Map[(String, String), ActorRef]()
 
-  def index(playerName: String) = Action {
-    implicit request: Request[AnyContent] =>
-      onIndex(request, playerName)
-  }
+  def index() = Action { implicit request: Request[AnyContent] => onIndex }
 
-  def command(cmd: String) = Action { implicit request: Request[AnyContent] =>
-    tui.onInput(cmd)
-    Ok
-  }
-
-  def channel = WebSocket.accept[JsValue, JsValue] { request =>
-    ActorFlow.actorRef { out =>
-      println("Connect received")
-      SudokuWebSocketActorFactory.create(out)
+  def channel = WebSocket.acceptOrResult[JsValue, JsValue] { request =>
+    Future.successful {
+      val remoteAddress = request.headers.get("remote-address").get
+      val remoteId = (remoteAddress.split(":")(0), remoteAddress.split(":")(1))
+      if (channels.size == 2) {
+        Left(TooManyRequests)
+      } else if (channels.nonEmpty && channels.contains(remoteId)) {
+        Left(BadRequest)
+      } else {
+        Right(ActorFlow.actorRef { channel =>
+          println("Connection established")
+          channels.addOne(remoteId, channel)
+          SudokuWebSocketActorFactory.create(channel)
+        })
+      }
     }
   }
 
-  override def update(message: Option[String], e: Event.Value) = {
-    e match {
-      case Event.QUIT => gameState = "The game has been quitted."
-      case Event.PLAY =>
-        if (message.isDefined) errorMessage = message.get
-        else {
-          gameState = gameController.currentGameState
-          currentPlayer =
-            gameController.gameState.get.game.currentPlayer.toString
-          errorMessage = ""
-        }
+  private def onIndex(implicit request: Request[AnyContent]): Result = Ok(
+    views.html.main()
+  )
+
+  private def restart = {
+    gameController = injector.getInstance(classOf[ControllerInterface])
+    tui = new TUI(gameController)
+    errorMessage = new String
+    channels.empty
+  }
+
+  private object SudokuWebSocketActorFactory {
+    def create(channel: ActorRef) = {
+      Props(new SudokuWebSocketActor(channel))
     }
   }
 
-  private def onIndex(
-      request: Request[AnyContent],
-      playerName: String
-  ): Result = {
-    println(routes.MillController.channel.webSocketURL(request.asJava))
-    if (!gameController.hasFirstPlayer && !playerName.isBlank) {
-      gameController.addFirstPlayer(playerName)
-      return Ok
-    } else if (!gameController.hasSecondPlayer && !playerName.isBlank) {
-      gameController.addSecondPlayer(playerName)
-      gameController.newGame
-    } else if (gameController.gameState.isEmpty) {
-      return Ok(views.html.index(Messages.introductionText))
-    }
-
-    Ok(
-      views.html
-        .mill(
-          gameState,
-          currentPlayer,
-          errorMessage,
-          gameController.gameState.get.game.board
-        )
-    )
+  private object GameEvent extends Enumeration {
+    type GameEvent = Value
+    val WAITING_FOR_SECOND_PLAYER, GAME_STARTED, GAME_INTRODUCTION,
+        GAME_PLAYING = Value
   }
 
-  object SudokuWebSocketActorFactory {
-    def create(out: ActorRef) = {
-      Props(new SudokuWebSocketActor(out))
-    }
-  }
-
-  class SudokuWebSocketActor(out: ActorRef) extends Actor with Observer {
+  private class SudokuWebSocketActor(channel: ActorRef)
+      extends Actor
+      with Observer {
     gameController.add(this)
 
-    private def data = JsObject(
+    override def preStart(): Unit = {
+      if (gameController.gameState.isEmpty) {
+        channel ! gameIntroduction
+      } else {
+        channel ! newGame
+      }
+    }
+
+    private def gameIntroduction = JsObject(
       Seq(
-        "board" -> gameController.gameState.get.game.board.toJson,
-        "currentPlayer" -> JsString(currentPlayer),
-        "gameState" -> JsString(gameState),
-        "errorMessage" -> JsString(errorMessage)
+        "event" -> JsString(GameEvent.GAME_INTRODUCTION.toString),
+        "page" -> JsString(views.html.index(Messages.introductionText).body)
       )
     )
 
-    def receive = { case msg: JsValue =>
-      out ! (data)
-      println("Sent Json to Client" + msg)
-    }
+    private def newGame = JsObject(
+      Seq(
+        "event" -> JsString(GameEvent.GAME_STARTED.toString),
+        "page" -> JsString(
+          views.html
+            .mill(
+              gameController.currentGameState,
+              gameController.gameState.get.game.currentPlayer.toString,
+              errorMessage,
+              gameController.gameState.get.game.board
+            )
+            .body
+        )
+      )
+    )
 
-    override def update(message: Option[String], e: Event.Value) = send
-
-    private def send = {
-      println("Received event from Controller")
-      if (gameController.hasSecondPlayer) {
-        out ! (data)
+    def receive = {
+      case msg: JsValue => {
+        val playerNameField = msg \ "playerName"
+        if (
+          playerNameField.isDefined && !playerNameField.get.as[String].isBlank
+        ) {
+          val playerName = playerNameField.get.as[String]
+          if (!gameController.hasFirstPlayer) {
+            gameController.addFirstPlayer(playerName)
+            channel ! JsObject(
+              Seq(
+                "event" -> JsString(
+                  GameEvent.WAITING_FOR_SECOND_PLAYER.toString
+                )
+              )
+            )
+          } else if (!gameController.hasSecondPlayer) {
+            gameController.addSecondPlayer(playerName)
+            gameController.newGame
+            channels.values.foreach(channel => {
+              channel ! newGame
+            })
+          }
+        } else {
+          val command = msg \ "command"
+          if (command.isDefined) {
+            tui.onInput(command.get.as[String])
+          }
+        }
       }
     }
+
+    override def update(message: Option[String], e: Event.Value) =
+      e match {
+        case Event.QUIT => {
+          restart
+          channel ! gameIntroduction
+        }
+        case Event.PLAY => {
+          errorMessage = if (message.isDefined) message.get else new String
+          channel ! JsObject(
+            Seq(
+              "event" -> JsString(GameEvent.GAME_PLAYING.toString),
+              "board" -> gameController.gameState.get.game.board.toJson,
+              "currentPlayer" -> JsString(
+                gameController.gameState.get.game.currentPlayer.toString
+              ),
+              "gameState" -> JsString(gameController.currentGameState),
+              "errorMessage" -> JsString(errorMessage)
+            )
+          )
+        }
+      }
   }
 }

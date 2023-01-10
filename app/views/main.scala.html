@@ -4,19 +4,18 @@
      * two arguments, a `String` for the title of the page and an `Html`
      * object to insert into the body of the page.
      *@
-    @(title: String)(content: Html)
-
+    @()(implicit r: Request[_])
     <!DOCTYPE html>
     <html lang="en">
         <head>
             @* Here's where we render the page title `String`. *@
-            <title>@title</title>
+            <title>Mill</title>
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
             <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
 
         </head>
-        <body>
+        <body data-ws-url="@routes.MillController.channel.webSocketURL()">
             @* And here's where we render the `Html` object containing
              * the page content. *@
             <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
@@ -47,8 +46,7 @@
             <div class="bg"></div>
             <div class="bg bg2"></div>
             <div class="bg bg3"></div>
-            @content
-
+            <div id="content"></div>
           <script src="@routes.Assets.versioned("javascripts/main.js")" type="module"></script>
         </body>
     </html>
