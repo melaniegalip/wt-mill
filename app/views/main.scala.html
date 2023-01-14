@@ -13,7 +13,6 @@
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
             <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
-
         </head>
         <body data-ws-url="@routes.MillController.channel.webSocketURL()">
             @* And here's where we render the `Html` object containing
@@ -46,7 +45,7 @@
             <div class="bg"></div>
             <div class="bg bg2"></div>
             <div class="bg bg3"></div>
-            <div id="content"></div>
+            <div id="app"></div>
           <script src="@routes.Assets.versioned("javascripts/main.js")" type="module"></script>
         </body>
     </html>

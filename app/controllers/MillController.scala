@@ -73,8 +73,8 @@ class MillController @Inject() (
 
   private object GameEvent extends Enumeration {
     type GameEvent = Value
-    val WAITING_FOR_SECOND_PLAYER, GAME_STARTED, GAME_INTRODUCTION, GAME_QUIT,
-        GAME_PLAYING = Value
+    val WAITING_FOR_SECOND_PLAYER, GAME_INTRODUCTION, GAME_QUIT, GAME_PLAYING =
+      Value
   }
 
   private class SudokuWebSocketActor(channel: ActorRef)
@@ -86,7 +86,7 @@ class MillController @Inject() (
       if (gameController.gameState.isEmpty) {
         channel ! gameIntroduction
       } else {
-        channel ! newGame
+        channel ! gamePlaying
       }
     }
 
@@ -100,34 +100,28 @@ class MillController @Inject() (
       restart
     }
 
-    private def gameIntroductionPage =
-      views.html.index(Messages.introductionText).body
-
-    private def newGame = JsObject(
-      Seq(
-        "event" -> JsString(GameEvent.GAME_STARTED.toString),
-        "page" -> JsString(
-          views.html
-            .mill(
-              gameController.currentGameState,
-              gameController.gameState.get.game.currentPlayer.toString,
-              errorMessage,
-              gameController.gameState.get.game.board
-            )
-            .body
-        )
-      )
-    )
     private def gameIntroduction = JsObject(
       Seq(
         "event" -> JsString(GameEvent.GAME_INTRODUCTION.toString),
-        "page" -> JsString(gameIntroductionPage)
+        "introductionText" -> JsString(Messages.introductionText)
       )
     )
 
     private def gameQuit = JsObject(
       Seq(
         "event" -> JsString(GameEvent.GAME_QUIT.toString)
+      )
+    )
+
+    private def gamePlaying = JsObject(
+      Seq(
+        "event" -> JsString(GameEvent.GAME_PLAYING.toString),
+        "board" -> gameController.gameState.get.game.board.toJson,
+        "currentPlayer" -> JsString(
+          gameController.gameState.get.game.currentPlayer.toString
+        ),
+        "gameState" -> JsString(gameController.currentGameState),
+        "errorMessage" -> JsString(errorMessage)
       )
     )
 
@@ -150,9 +144,6 @@ class MillController @Inject() (
           } else if (!gameController.hasSecondPlayer) {
             gameController.addSecondPlayer(playerName)
             gameController.newGame
-            channels.values.foreach(channel => {
-              channel ! newGame
-            })
           }
         } else {
           val command = msg \ "command"
@@ -168,17 +159,7 @@ class MillController @Inject() (
         case Event.QUIT => aroundPostStop()
         case Event.PLAY => {
           errorMessage = if (message.isDefined) message.get else new String
-          channel ! JsObject(
-            Seq(
-              "event" -> JsString(GameEvent.GAME_PLAYING.toString),
-              "board" -> gameController.gameState.get.game.board.toJson,
-              "currentPlayer" -> JsString(
-                gameController.gameState.get.game.currentPlayer.toString
-              ),
-              "gameState" -> JsString(gameController.currentGameState),
-              "errorMessage" -> JsString(errorMessage)
-            )
-          )
+          channel ! gamePlaying
         }
       }
   }
