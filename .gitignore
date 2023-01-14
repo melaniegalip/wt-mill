@@ -12,3 +12,4 @@ target
 .metals/
 .vscode/
 project/project/
+node_modules
