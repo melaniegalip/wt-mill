@@ -1,41 +1,34 @@
 <template>
   <div id="home">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Welcome to Mill!</h5>
-        <div
-          class="card-text"
-          :class="{ 'non-interactable': isLoading }"
-        >
-          <pre>{{ text }}</pre>
-          <form @submit.prevent="onNewPlayer">
-            <div class="mb-3 row">
-              <label for="playerName" class="col-sm-2 col-form-label"
-                >Player Name</label
-              >
-              <div class="col-sm-10">
-                <input
-                  type="text"
-                  class="form-control"
-                  id="playerName"
-                  v-model="playerName"
-                  min="3"
-                  autofocus
-                />
-              </div>
-            </div>
-            <button type="submit" class="btn btn-primary">
-              Continue
-            </button>
-          </form>
-          <div class="loading-indicator" :class="{ show: isLoading }">
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
+    <b-card
+      footer-bg-variant="white"
+      footer-border-variant="white"
+      title="Welcome to Mill!"
+      style="position: relative"
+    >
+      <b-card-text>
+        <pre>{{ text }}</pre>
+        <div class="loading-indicator" :class="{ show: isLoading }">
+          <b-spinner label="Loading..."></b-spinner>
         </div>
-      </div>
-    </div>
+      </b-card-text>
+      <b-card-footer :class="{ 'non-interactable': isLoading }">
+        <b-form @submit.stop.prevent="onNewPlayer">
+          <label for="playerName">Player Name</label>
+          <b-form-input
+            v-model="playerName"
+            :state="validation"
+            id="playerName"
+          ></b-form-input>
+          <b-form-invalid-feedback :state="validation">
+            Your Player Name must be 5-12 characters long.
+          </b-form-invalid-feedback>
+          <b-form-valid-feedback :state="validation">
+            Looks Good.
+          </b-form-valid-feedback>
+        </b-form>
+      </b-card-footer>
+    </b-card>
   </div>
 </template>
 <script>
@@ -53,12 +46,18 @@ export default {
   emits: ['playerName'],
   methods: {
     onNewPlayer() {
-      this.$emit('playerName', this.playerName);
+      if (this.validation) this.$emit('playerName', this.playerName);
+    },
+  },
+  computed: {
+    validation() {
+      return (
+        this.playerName.length > 4 && this.playerName.length < 13
+      );
     },
   },
 };
 </script>
 <style lang="scss" scoped>
-@import 'bootstrap/scss/bootstrap-utilities';
 @import '@/assets/stylesheets/home';
 </style>

@@ -1,4 +1,3 @@
-@import 'bootstrap/dist/css/bootstrap.min';
 @import './util';
 @import './loading-indicator';
 @import './alert';
@@ -16,6 +15,6 @@ body,
 pre {
   white-space: pre-line;
   word-wrap: break-word;
-  margin-bottom: unset;
+  margin-bottom: unset !important;
   text-align: center;
 }

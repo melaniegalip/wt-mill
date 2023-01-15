@@ -33,7 +33,7 @@ export default {
   data() {
     return {
       channel: new WebSocket(channelRoute),
-      isLoading: false,
+      isLoading: true,
       playerName: '',
       introductionText: '',
       errorMessage: '',
@@ -59,7 +59,7 @@ export default {
       this.channel.send(JSON.stringify(command));
     },
     restartChannel() {
-      this.isLoading = false;
+      this.isLoading = true;
       this.errorMessage = '';
       this.board = null;
       this.gameState = '';
@@ -97,6 +97,7 @@ export default {
           switch (data.event) {
             case 'GAME_INTRODUCTION':
               this.introductionText = data.introductionText;
+              this.isLoading = false;
               break;
             case 'WAITING_FOR_SECOND_PLAYER':
               this.isLoading = true;

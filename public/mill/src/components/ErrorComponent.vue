@@ -1,28 +1,23 @@
 <template>
-  <div
-    id="error-message-alert"
-    class="alert alert-danger fade d-flex align-items-center"
-    :class="{ show: !!text }"
-    role="alert"
+  <b-alert
+    variant="danger"
+    dismissible
+    fade
+    :show="!!text && showAlert"
+    @dismissed="showAlert = false"
   >
-    <svg
-      class="bi flex-shrink-0 me-2"
-      width="24"
-      height="24"
-      role="img"
-      aria-label="Danger:"
-    >
-      <use xlink:href="#exclamation-triangle-fill" />
-    </svg>
-    <div>
-      <strong>Warning!</strong>
-      <span id="error-message">{{ text }}</span>
-    </div>
-  </div>
+    <strong>Warning!</strong>
+    <span id="error-message">{{ text }}</span>
+  </b-alert>
 </template>
 <script>
 export default {
   name: 'ErrorComponent',
+  data() {
+    return {
+      showAlert: true,
+    };
+  },
   props: {
     text: String,
   },

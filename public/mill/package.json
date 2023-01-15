@@ -10,7 +10,7 @@
       "dependencies": {
         "@popperjs/core": "^2.11.6",
         "bootstrap": "^5.2.2",
-        "core-js": "^3.8.3",
+        "bootstrap-vue-3": "^0.4.6",
         "vue": "^3.2.13"
       },
       "devDependencies": {

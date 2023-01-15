@@ -1,3 +1,4 @@
+@import 'bootstrap/scss/bootstrap-utilities';
 #home {
   display: flex;
   justify-content: center;
@@ -8,9 +9,6 @@
     width: 90%;
     @include media-breakpoint-up(lg) {
       width: 50%;
-    }
-    .card-text {
-      position: relative;
     }
   }
 }
