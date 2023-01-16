@@ -4,15 +4,12 @@
   justify-content: center;
   align-items: center;
   height: 100%;
-  .actions {
-    margin-left: 2rem;
-  }
   #game-state {
     position: absolute;
     z-index: 2;
     &.alert {
       margin-bottom: 0;
-      padding: 1rem 0.5rem;
+      padding: 0.75vw 1vw;
     }
     h2 {
       margin-bottom: 0;
@@ -24,25 +21,49 @@
         font-size: 1.75rem;
       }
     }
-    width: 60%;
+    width: 35vw;
     @include media-breakpoint-up(md) {
-      width: 50%;
+      width: 40vw;
     }
     @include media-breakpoint-up(lg) {
-      width: 40%;
+      width: 18vw;
     }
   }
   .board-container {
     display: flex;
+    flex-direction: column;
     width: 100%;
     @include media-breakpoint-up(md) {
-      height: 60vh;
+      height: 65vh;
     }
     @include media-breakpoint-up(lg) {
-      width: calc(3 / 6 * 100%);
+      flex-direction: row;
+      width: 60vw;
       height: 80vh;
     }
     height: 50vh;
+  }
+  .actions {
+    margin-top: 2vw;
+    @include media-breakpoint-up(lg) {
+      margin-top: 0;
+      margin-left: 1vw;
+    }
+    button {
+      margin-right: 2vw;
+      @include media-breakpoint-up(lg) {
+        margin-right: 0;
+        &:first-of-type {
+          margin-right: 0.5vw;
+        }
+        &:last-of-type {
+          margin-top: 0.5vw;
+        }
+      }
+      &:last-of-type {
+        margin-right: 0;
+      }
+    }
   }
   .board {
     position: relative;

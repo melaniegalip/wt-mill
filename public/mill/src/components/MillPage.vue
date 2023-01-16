@@ -23,8 +23,8 @@
   </div>
   <div class="actions">
       <b-button v-model="save" @click="saveOrLoad" size="lg" :variant="save ? 'success' : 'primary'">{{save ? 'Save' : 'Load'}}</b-button>
-      <b-button @click="quit" class="ml-2" size="lg" variant="danger">Quit</b-button>
-      <b-button @click="newGame" class="mt-2" size="lg" variant="primary">New Game</b-button>
+      <b-button @click="quit" size="lg" variant="danger">Quit</b-button>
+      <b-button @click="newGame" size="lg" variant="primary">New Game</b-button>
     </div>
   </div>
 

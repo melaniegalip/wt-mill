@@ -59,6 +59,9 @@ export default {
     },
     onChannel() {
       this.channel.setTimeout;
+      setInterval(() => {
+        this.channel.send(JSON.stringify({keepAlive: true}))
+      }, 5000);
       this.channel.onopen = (event) => {
         console.info('Connected to channel', event);
       };
