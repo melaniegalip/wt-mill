@@ -87,7 +87,6 @@ class MillController @Inject() (
     override def aroundPostStop(): Unit = {
       println("quitting game")
       channels.values
-        .filter(ch => !ch.equals(channel))
         .foreach(ch => {
           ch ! gameQuit
         })
