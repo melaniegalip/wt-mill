@@ -12,6 +12,7 @@ libraryDependencies ++= Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test,
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5"
 )
+
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "de.htwg.wt.mill.controllers._"
 

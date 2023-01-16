@@ -13,4 +13,4 @@ target
 .vscode/
 project/project/
 gameState.*
-node_modules
+.env
