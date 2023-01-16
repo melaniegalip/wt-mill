@@ -12,6 +12,14 @@ libraryDependencies ++= Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test,
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5"
 )
+PlayKeys.devSettings := Seq(
+  ("play.server.http.port", "disabled"),
+  ("play.server.https.port", "9443"),
+  ("play.server.https.keyStore.path", "certs/server.keystore"),
+  ("play.server.https.keyStore.type", "JKS"),
+  ("play.server.https.keyStore.password", "eiskallt55")
+)
+
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "de.htwg.wt.mill.controllers._"
 
