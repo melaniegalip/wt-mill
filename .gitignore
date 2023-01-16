@@ -12,3 +12,5 @@ target
 .metals/
 .vscode/
 project/project/
+gameState.*
+node_modules

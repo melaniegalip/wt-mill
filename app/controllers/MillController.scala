@@ -34,8 +34,6 @@ class MillController @Inject() (
   private val channels =
     scala.collection.mutable.Map[(String, String), ActorRef]()
 
-  def index() = Action { implicit request: Request[AnyContent] => onIndex }
-
   def channel = WebSocket.acceptOrResult[JsValue, JsValue] { request =>
     Future.successful {
       val remoteAddress = request.headers.get("remote-address").get
@@ -53,10 +51,6 @@ class MillController @Inject() (
       }
     }
   }
-
-  private def onIndex(implicit request: Request[AnyContent]): Result = Ok(
-    views.html.main()
-  )
 
   private def restart = {
     gameController = injector.getInstance(classOf[ControllerInterface])

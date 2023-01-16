@@ -8,8 +8,7 @@
 
     # Mill Controller
 
-    GET / controllers.MillController.index
-    GET /channel  controllers.MillController.channel
+    GET /  controllers.MillController.channel
 
     # Map static resources from the /public folder to the /assets URL path
 

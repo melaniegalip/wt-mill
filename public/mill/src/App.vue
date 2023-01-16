@@ -1,9 +1,39 @@
-const channelRoute = document.body.dataset.wsUrl;
-const AppComponent = {
+<template>
+  <ErrorComponent :text="errorMessage"></ErrorComponent>
+  <HomePage
+    v-if="!board"
+    :isLoading="isLoading"
+    @playerName="addPlayer"
+    :text="introductionText"
+  ></HomePage>
+  <MillPage
+    v-else
+    :currentPlayer="currentPlayer"
+    :playerName="playerName"
+    :board="board"
+    :gameState="gameState"
+    :errorMessage="errorMessage"
+    @onAction="onAction"
+  ></MillPage>
+</template>
+
+<script>
+import HomePage from './components/HomePage.vue';
+import ErrorComponent from './components/ErrorComponent.vue';
+import MillPage from './components/MillPage.vue';
+const channelRoute = 'ws://localhost:9000';
+
+export default {
+  name: 'App',
+  components: {
+    HomePage,
+    ErrorComponent,
+    MillPage,
+  },
   data() {
     return {
       channel: new WebSocket(channelRoute),
-      isLoading: false,
+      isLoading: true,
       playerName: '',
       introductionText: '',
       errorMessage: '',
@@ -29,7 +59,7 @@ const AppComponent = {
       this.channel.send(JSON.stringify(command));
     },
     restartChannel() {
-      this.isLoading = false;
+      this.isLoading = true;
       this.errorMessage = '';
       this.board = null;
       this.gameState = '';
@@ -57,7 +87,7 @@ const AppComponent = {
             command: 'q',
           })
         );
-        restartChannel();
+        this.restartChannel();
       };
 
       this.channel.onmessage = (e) => {
@@ -67,6 +97,7 @@ const AppComponent = {
           switch (data.event) {
             case 'GAME_INTRODUCTION':
               this.introductionText = data.introductionText;
+              this.isLoading = false;
               break;
             case 'WAITING_FOR_SECOND_PLAYER':
               this.isLoading = true;
@@ -87,11 +118,9 @@ const AppComponent = {
       };
     },
   },
-  template: `
-        <Error :text="errorMessage"></Error>
-        <IndexPage v-if="!board" :isLoading="isLoading" @playerName="addPlayer" :text="introductionText"></IndexPage>
-        <MillPage v-else :currentPlayer="currentPlayer" :playerName="playerName" :board="board" :gameState="gameState" :errorMessage="errorMessage" @onAction="onAction"></MillPage>
-      `,
 };
+</script>
 
-export default AppComponent;
+<style lang="scss">
+@import '@/assets/stylesheets/main';
+</style>
