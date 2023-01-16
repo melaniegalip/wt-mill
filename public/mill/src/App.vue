@@ -1,34 +1,21 @@
 <template>
   <ErrorComponent :text="errorMessage"></ErrorComponent>
-  <HomePage
-    v-if="!board"
-    :isLoading="isLoading"
-    @playerName="addPlayer"
-    :text="introductionText"
-  ></HomePage>
-  <MillPage
-    v-else
-    :currentPlayer="currentPlayer"
-    :playerName="playerName"
-    :board="board"
-    :gameState="gameState"
-    :errorMessage="errorMessage"
-    @onAction="onAction"
-  ></MillPage>
+  <HomePage v-if="!board" :isLoading="isLoading" @playerName="addPlayer" :text="introductionText"></HomePage>
+  <MillPage v-else :currentPlayer="currentPlayer" :playerName="playerName" :board="board" :gameState="gameState"
+    :errorMessage="errorMessage" @onAction="onAction"></MillPage>
 </template>
 
 <script>
 import HomePage from './components/HomePage.vue';
 import ErrorComponent from './components/ErrorComponent.vue';
 import MillPage from './components/MillPage.vue';
-const channelRoute = 'ws://localhost:9000';
-
+const channelRoute = "wss://localhost:9443";
 export default {
   name: 'App',
   components: {
     HomePage,
     ErrorComponent,
-    MillPage,
+    MillPage
   },
   data() {
     return {
@@ -97,7 +84,7 @@ export default {
           switch (data.event) {
             case 'GAME_INTRODUCTION':
               this.introductionText = data.introductionText;
-              this.isLoading = false;
+              this.isLoading = false
               break;
             case 'WAITING_FOR_SECOND_PLAYER':
               this.isLoading = true;
@@ -122,5 +109,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/assets/stylesheets/main';
+@import '@/assets/stylesheets/main'
 </style>
