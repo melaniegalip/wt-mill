@@ -1,5 +1,5 @@
 # Install Java and set the JAVA_HOME variable
-FROM openjdk:11-jre-slim-buster
+FROM openjdk:11
 
 ENV SBT_VERSION 1.7.1
 
