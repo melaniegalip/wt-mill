@@ -13,7 +13,12 @@ version := "1.0-SNAPSHOT"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala, DockerPlugin)
 
-scalaVersion := "2.13.9"
+ThisBuild / scalaVersion := "2.13.9"
+ThisBuild / version := "1.0"
+ThisBuild / publishTo := Some("Docker Hub" at "docker.io/melaniegalip1997/mill")
+Docker / packageName := "melaniegalip1997/mill"
+dockerRepository := Some("docker.io")
+publishArtifact := false
 
 // standard tcp ports
 dockerExposedPorts ++= Seq(9000, 9001)
