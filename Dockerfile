@@ -1,9 +1,7 @@
 # Install Java and set the JAVA_HOME variable
-FROM openjdk:8
-ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
-ENV PATH $PATH:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin
+FROM openjdk:11-jre-slim-buster
 
-ENV SBT_VERSION 1.5.8
+ENV SBT_VERSION 1.7.1
 
 # Install curl and vim
 RUN \
