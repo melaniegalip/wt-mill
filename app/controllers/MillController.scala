@@ -122,7 +122,10 @@ class MillController @Inject() (
       case msg: JsValue => {
         val playerNameField = msg \ "playerName"
         if (
-          playerNameField.isDefined && !playerNameField.get.as[String].isBlank
+          playerNameField.isDefined && !playerNameField.get
+            .as[String]
+            .trim
+            .isEmpty
         ) {
           val playerName = playerNameField.get.as[String]
           if (!gameController.hasFirstPlayer) {
