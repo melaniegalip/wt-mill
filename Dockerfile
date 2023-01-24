@@ -1,5 +1,5 @@
 # Install Java and set the JAVA_HOME variable
-FROM azul/zulu-openjdk-alpine:11
+FROM azul/zulu-openjdk:11
 
 ENV SBT_VERSION 1.7.1
 
